@@ -1,0 +1,18 @@
+@media print {
+  .noPrint{
+    display: none;
+  }}
+
+  #toPrint{
+  scale: 1;
+  }
+
+.spaceing{
+  width:80%;
+}  
+.seperator{
+  border-left: 3px solid rgb(46, 43, 43);
+}
+.gryer{
+  background:#eeeeee
+}

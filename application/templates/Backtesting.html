@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+      <!-- CSS only -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+      <!-- JavaScript Bundle with Popper -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+      <!--Plugin CSS file with desired skin-->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
+      <!--jQuery-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <!--Plugin JavaScript file-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+      <!-- my css page -->
+      <link rel="stylesheet" href="/static/css/master.css">
+  </head>
+  <body>
+    <!-- כותרת   -->
+
+    <div class="text-bg-dark bg-gradient p-1 mb-1 text-center noPrint">
+      <div class="row CONTAINER m-0 px-0 pb-1" dir="rtl">
+        {%if User != None%}
+          <div class="col-auto">
+            <h5>שלום {{User.username}}</h5>
+          </div>
+          <div class="col-auto">
+            <a class="link-light" href="{{url_for('logout')}}">התנתקות</a>
+          </div>
+        {%else%}
+        <div class="col-auto">
+          <h5>שלום אורח</h5>
+        </div>
+        <div class="col-auto" >
+          <a class="link-light" href="{{url_for('login')}}">התחברות לאזור האישי</a>
+        </div>
+        {%endif%}
+        <!-- כותרת   -->
+  <div class="col-9">
+          <h3>השוואה וניתוח של קופות גמל, קרנות פנסיה, פוליסות וקרנות השתלמות</h3>
+    </div>
+
+    </div>
+  </div>
+
+<div class="row">
+    <div class="col-2 ms-2 px-1 form-check border rounded">
+      <div class="d-grid gap-2 mt-2">
+        <a href="{{url_for('index')}}" class="btn btn-dark">לסנן הקופות</a>
+        <a class="btn btn-dark bg-gradient UserPrivilege" href="{{url_for('myProfile')}}">הפרופיל שלי</a>
+        <a class="btn btn-dark bg-gradient UserPrivilege" href="{{url_for('calculators')}}">מחשבונים</a>
+        <a class="btn btn-dark bg-gradient UserPrivilege" href="{{url_for('optimizer')}}">אופטימייזר</a>
+        <a class="btn btn-dark bg-gradient UserPrivilege" href="{{url_for('dictionary')}}">מילון מונחים</a>
+    {%if User != None%}
+        <a class="btn btn-dark bg-gradient" href="{{url_for('logout')}}" >התנתקות</a>
+    {%else%}
+      <a class="btn btn-dark bg-gradient" href="{{url_for('login')}}" >התחברות</a>
+    {%endif%}
+      <div class="border border-dark">
+          <iframe src="{{url_for('agentRedirect')}}" height="400"></iframe>
+      </div>
+      </div>
+    </div>
+
+  <div class="col gryer">
+  <div class="border-bottom border-dark text-center" style="--bs-border-opacity: .5;" dir="rtl">בדף זה תוכלו לערוך השוואה בין ביצועי העבר של קופות שונות,<br>ותוכלו לראות מה היה קורה לכסף שלכם אילו הייתם שמים אותו בקופה המקבילה</div>
+
+  <form class="gryer" dir="rtl" method="POST">
+      {{form.hidden_tag()}}
+
+      <table class="table">
+        <thead>
+        <th class="col-1"></th>
+        <th class="col-1">הקופות שלי</th>
+
+        <th class="col-1 seperator"></th>
+        <th class="col-1"></th>
+        <th class="col me-1">קופות להשוואה</th>
+        <th class="col-1 seperator"></th>
+          </tr>
+          <tr>
+            <th class="col-1">{{form.backKupaType0.label}}</th>
+            <th class="col-1">{{form.backKupaManufacturers0.label}}</th>
+            <th class="col-1 seperator">{{form.backKupaName0.label}}</th>
+
+
+            <th class="col-1">{{form.backKupaType0.label}}</th>
+            <th class="col-1">{{form.backKupaManufacturers0.label}}</th>
+            <th class="col-1 seperator">{{form.backKupaName0.label}}</th>
+
+            <th class="col-1">{{form.testStartDate0.label}}</th>
+            <th class="col-1">{{form.initialInput0.label}}</th>
+            <th class="col-1">{{form.repeatingInput0.label}}</th>
+            <th class="col-1">{{form.difference0.label}}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+            <tr class="backtestingInput">
+              <td class="col-1 inputToChange">{{form.backKupaType0(class_="myKupaType")}}</td>
+              <td class="col-1 inputToChange">{{form.backKupaManufacturers0(class_="myMenahelKupa")}}</td>
+              <td class="col-1 seperator">{{form.backKupaName0(class_='d-inline-block text-truncate',style_="max-width: 150px;")}}</td>
+
+              <td class="col-1 inputToChange">{{form.frontKupaType0(class_="replacingKupaType")}}</td>
+              <td class="col-1 inputToChange">{{form.frontKupaManufacturers0}}</td>
+              <td class="col-1 seperator">{{form.frontKupaName0(class_='d-inline-block text-truncate',style_="max-width: 150px;")}}</td>
+
+              <td class="col-1">{{form.testStartDate0}}</td>
+              <td class="col-1">{{form.initialInput0(class_="spaceing")}}</td>
+              <td class="col-1">{{form.repeatingInput0(class_="spaceing")}}</td>
+              <td class="col-1">{{form.difference0(class_="spaceing",readonly=true)}}</td>
+            </tr>
+
+            <tr class="backtestingInput">
+              <td class="col-1 inputToChange">{{form.backKupaType1(class_="myKupaType")}}</td>
+              <td class="col-1 inputToChange">{{form.backKupaManufacturers1(class_="myMenahelKupa")}}</td>
+              <td class="col-1 seperator">{{form.backKupaName1(class_='d-inline-block text-truncate',style_="max-width: 150px;")}}</td>
+
+              <td class="col-1 inputToChange">{{form.frontKupaType1(class_="replacingKupaType")}}</td>
+              <td class="col-1 inputToChange">{{form.frontKupaManufacturers1}}</td>
+              <td class="col-1 seperator">{{form.frontKupaName1(class_='d-inline-block text-truncate',style_="max-width: 150px;")}}</td>
+
+              <td class="col-1">{{form.testStartDate1}}</td>
+              <td class="col-1">{{form.initialInput1(class_="spaceing")}}</td>
+              <td class="col-1">{{form.repeatingInput1(class_="spaceing")}}</td>
+              <td class="col-1">{{form.difference1(class_="spaceing",readonly=true)}}</td>
+            </tr>
+
+            <tr class="backtestingInput">
+              <td class="col-1 inputToChange">{{form.backKupaType2(class_="myKupaType")}}</td>
+              <td class="col-1 inputToChange">{{form.backKupaManufacturers2(class_="myMenahelKupa")}}</td>
+              <td class="col-1 seperator">{{form.backKupaName2(class_='d-inline-block text-truncate',style_="max-width: 150px;")}}</td>
+
+              <td class="col-1 inputToChange">{{form.frontKupaType2(class_="replacingKupaType")}}</td>
+              <td class="col-1 inputToChange">{{form.frontKupaManufacturers2}}</td>
+              <td class="col-1 seperator">{{form.frontKupaName2(class_='d-inline-block text-truncate',style_="max-width: 150px;")}}</td>
+
+              <td class="col-1">{{form.testStartDate2}}</td>
+              <td class="col-1">{{form.initialInput2(class_="spaceing")}}</td>
+              <td class="col-1">{{form.repeatingInput2(class_="spaceing")}}</td>
+              <td class="col-1">{{form.difference2(class_="spaceing",readonly=true)}}</td>
+            </tr>
+
+            <tr class="backtestingInput">
+              <td class="col-1 inputToChange">{{form.backKupaType3(class_="myKupaType")}}</td>
+              <td class="col-1 inputToChange">{{form.backKupaManufacturers3(class_="myMenahelKupa")}}</td>
+              <td class="col-1 seperator">{{form.backKupaName3(class_='d-inline-block text-truncate',style_="max-width: 150px;")}}</td>
+
+              <td class="col-1 inputToChange">{{form.frontKupaType3(class_="replacingKupaType")}}</td>
+              <td class="col-1 inputToChange">{{form.frontKupaManufacturers3}}</td>
+              <td class="col-1 seperator">{{form.frontKupaName3(class_='d-inline-block text-truncate',style_="max-width: 150px;")}}</td>
+
+              <td class="col-1">{{form.testStartDate3}}</td>
+              <td class="col-1">{{form.initialInput3(class_="spaceing")}}</td>
+              <td class="col-1">{{form.repeatingInput3(class_="spaceing")}}</td>
+              <td class="col-1">{{form.difference3(class_="spaceing",readonly=true)}}</td>
+            </tr>
+
+            <tr class="backtestingInput">
+              <td class="col-1 inputToChange">{{form.backKupaType4(class_="myKupaType")}}</td>
+              <td class="col-1 inputToChange">{{form.backKupaManufacturers4(class_="myMenahelKupa")}}</td>
+              <td class="col-1 seperator">{{form.backKupaName4(class_='d-inline-block text-truncate',style_="max-width: 150px;")}}</td>
+
+
+              <td class="col-1 inputToChange">{{form.frontKupaType4(class_="replacingKupaType")}}</td>
+              <td class="col-1 inputToChange">{{form.frontKupaManufacturers4}}</td>
+              <td class="col-1 seperator">{{form.frontKupaName4(class_='d-inline-block text-truncate',style_="max-width: 150px;")}}</td>
+
+              <td class="col-1">{{form.testStartDate4}}</td>
+              <td class="col-1">{{form.initialInput4(class_="spaceing")}}</td>
+              <td class="col-1">{{form.repeatingInput4(class_="spaceing")}}</td>
+              <td class="col-1">{{form.difference4(class_="spaceing",readonly=true)}}</td>
+            </tr>
+        </tbody>
+      </table>
+    {{form.submit(class_="btn btn-dark",type_="submit")}}
+  </form>
+  </div>
+</div>
+<p id="myResultList0" hidden>{{myResults["myRow0"]}}</p>
+<p id="compResultList0" hidden>{{myResults["testingRow0"]}}</p>
+
+<p id="myResultList1" hidden>{{myResults["myRow1"]}}</p>
+<p id="compResultList1" hidden>{{myResults["testingRow1"]}}</p>
+
+<p id="myResultList2" hidden>{{myResults["myRow2"]}}</p>
+<p id="compResultList2" hidden>{{myResults["testingRow2"]}}</p>
+
+<p id="myResultList3" hidden>{{myResults["myRow3"]}}</p>
+<p id="compResultList3" hidden>{{myResults["testingRow3"]}}</p>
+
+<p id="myResultList4" hidden>{{myResults["myRow4"]}}</p>
+<p id="compResultList4" hidden>{{myResults["testingRow4"]}}</p>
+
+<select id="prevData" hidden>
+  <option value="0">{{selectedResults["0"]}}</option>
+  <option value="1">{{selectedResults["1"]}}</option>
+  <option value="2">{{selectedResults["2"]}}</option>
+  <option value="3">{{selectedResults["3"]}}</option>
+  <option value="4">{{selectedResults["4"]}}</option>
+  <option value="5">{{selectedResults["5"]}}</option>
+  <option value="6">{{selectedResults["6"]}}</option>
+  <option value="7">{{selectedResults["7"]}}</option>
+  <option value="8">{{selectedResults["8"]}}</option>
+  <option value="9">{{selectedResults["9"]}}</option>
+</select>
+  </body>
+</html>
+<script type="text/javascript">
+
+function updatePageData(KupaList,KupaName){
+  const resultList=document.getElementById(KupaList).innerHTML.split("), (");
+  for(i in resultList){
+    let kupaData = resultList[i].split(",")
+    const myWord = kupaData[0]
+    var newWord=""
+    for(x in myWord){
+      if (myWord[x] != "[" && myWord[x] != "]" && myWord[x] != "'" && myWord[x] != "("){
+         newWord=newWord+resultList[i][x];
+      }
+    }
+    newWord=newWord+" ("+parseInt(kupaData[1])+")"
+    document.getElementById(KupaName).innerHTML=document.getElementById(KupaName).innerHTML+"<option class='d-inline-block text-truncate' value='"+parseInt(kupaData[1])+"'>"+newWord+"</option>";
+  }
+}
+function dataUpdate(){
+  const stufToUpdate=['myResultList0',"backKupaName0",'compResultList0',"frontKupaName0",'myResultList1',"backKupaName1",'compResultList1',"frontKupaName1",'myResultList2',"backKupaName2",
+  'compResultList2',"frontKupaName2",'myResultList3',"backKupaName3",'compResultList3',"frontKupaName3",'myResultList4',"backKupaName4",'compResultList4',"frontKupaName4"]
+  
+  const stufToPerserv=["backKupaName0","frontKupaName0","backKupaName1","frontKupaName1","backKupaName2","frontKupaName2","backKupaName3","frontKupaName3","backKupaName4","frontKupaName4",]  
+  
+  const prevData=document.getElementById("prevData").children;
+  
+  var index=0
+  for (u in stufToUpdate){
+    if(index==0){
+      index++
+      updatePageData(stufToUpdate[u],stufToUpdate[parseInt(u)+1]);
+    }else{
+      index--
+    }
+}
+for (f in stufToPerserv){
+  var KupotNameOptions = document.getElementById(stufToPerserv[f]).children;
+  for (n in KupotNameOptions){
+    if(Number.isNaN(parseInt(n))){}else{
+    kupaToTest=KupotNameOptions[n].value.replace(/ /g,"");
+    kupaToTestAgainst=prevData[f].innerHTML.replace(/ /g,"");
+    if (typeof KupotNameOptions[n]=="object" && kupaToTest==kupaToTestAgainst){
+      KupotNameOptions[n].selected = true;
+    }
+    }
+  }
+}
+}
+
+$(document).ready(function(){
+  if({{reloder}}==1){
+    document.getElementById("submit").click();
+  }
+dataUpdate();
+document.getElementById("difference0").value={{compResults["0"]}};
+})
+$(".inputToChange").change(function(){
+document.getElementById("submit").click();
+});
+
+</script>
+<script src="http://127.0.0.1:80//static/js/backtesting.js"></script>

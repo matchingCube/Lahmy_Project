@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="he" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>GemelTeck.co.il</title>
+      <!-- CSS only -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+      <!-- JavaScript Bundle with Popper -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+      <!--Plugin CSS file with desired skin-->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
+      <!--jQuery-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <!--Plugin JavaScript file-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+      <!-- my css page -->
+      <link rel="stylesheet" href="/static/css/master.css">
+  </head>
+<body >
+<div class="text-bg-dark bg-gradient p-1 mb-1 text-center">
+  <div class="row CONTAINER m-0 px-0 pb-1" dir="rtl">
+    {%if User != None%}
+      <div class="col-auto">
+        <h5>שלום {{User.username}}</h5>
+      </div>
+      <div class="col-auto">
+        <a class="btn link-light" href="{{url_for('logout')}}" style="background-color:#190075;">התנתקות</a>
+      </div>
+    {%else%}
+    <div class="col-auto">
+      <h5>שלום אורח</h5>
+    </div>
+    <div class="col-auto" >
+      <a class="btn link-light" href="{{url_for('login')}}" style="background-color:#190075;">התחברות לאזור האישי</a>
+    </div>
+    {%endif%}
+    <!-- כותרת   -->
+<div class="col-9">
+      <h3>השוואה וניתוח של קופות גמל, קרנות פנסיה, פוליסות וקרנות השתלמות</h3>
+  </div>
+
+</div>
+  </div>
+<form  method="POST" >
+    {{form.hidden_tag()}}
+<div class="row">
+  <div class="col-2 ms-2 px-1 form-check border rounded">
+      <div class="d-grid gap-2 mt-2">
+      <a id="coopComp" class="btn btn-dark bg-gradient myvalidate" type="button" href="{{url_for('comparison')}}?idList={{form.id_list.data}}&kupaType={{form.kupa_type.data}}&maxMenayot={{form.hidden_menayot_max.data}}&maxMatach={{form.hidden_forex_max.data}}&searchWord={{form.search.data}}">השוואת קופות</a>
+      <a class="btn btn-dark bg-gradient" type="button" onclick="exportData()"
+      data-bs-toggle="popover" data-bs-trigger="hover focus"
+      data-bs-content="כפתור זה מיצא לאקסל את {{excelLimitor}} השורות הראשונות בטבלה">יצוא לאקסל</a>
+      <a class="btn btn-dark bg-gradient myvalidate UserPrivilege" type="button" href="{{url_for('Backtest')}}" >backtesting</a>
+      <a class="btn btn-dark bg-gradient UserPrivilege" href="{{url_for('myProfile')}}">הפרופיל שלי</a>
+      <a class="btn btn-dark bg-gradient UserPrivilege" href="{{url_for('calculators')}}">מחשבונים</a>
+      <a class="btn btn-dark bg-gradient UserPrivilege" href="{{url_for('optimizer')}}">אופטימייזר</a>
+      <a class="btn btn-dark bg-gradient" href="{{url_for('dictionary')}}">מילון מונחים</a>
+    {%if User != None%}
+        <a class="btn btn-dark bg-gradient" href="{{url_for('logout')}}" >התנתקות</a>
+    {%else%}
+      <a class="btn btn-dark bg-gradient" href="{{url_for('login')}}" >התחברות</a>
+    {%endif%}
+    {{form.Submit(class_="btn btn-dark bg-gradient")}}
+      <div class="border border-dark">
+          <iframe src="{{url_for('agentRedirect')}}" height="400"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+
+<div class="CONTAINER">
+  <!-- סוג קופה -->
+<div class=" m-0 px-0 pb-1 " dir="rtl">
+    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+        {%for option in form.kupa_type%}
+          <div class=" d-grid gap-2 col-5">
+              {{option.label(class_="form-check-label btn btn-outline-dark fs-5 fw-semibold")}}
+              {{option(class_=" btn btn-check checker kupotChangeWatcher", type_="radio",autocomplete_="off")}}
+          </div>
+        {%endfor%}
+    </div>
+  </div>
+
+    <!-- מסננים -->
+    <div class="CONTAINER text-center text-bg-light mx-3 ">
+        <div class="row">
+
+          <!-- קופות להשוואה -->
+          <div class="col border border-dark form-check px-1" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom"
+          data-bs-content="ניתן להוסיף קופה לרשימת הקופות הנבחרות בלחיצה על שורת הקופה בטבלה">
+              <h6 class="border-bottom border-dark text-center">קופות שנבחרו להשוואה</h6>
+            <div class="d-grid gap-2">
+              {{form.id_list(class_="idList", type_="hidden")}}
+                  <table class="table table-striped ">
+                    <thead>
+                      <th scope="col" style="width:100%;"></th>
+                    </thead>
+                    <tbody id="selected_group" style="display:block; overflow-y:auto; overflow-x:hidden; height:200px;">
+
+                    </tbody>
+                  </table>
+            </div>
+          </div>
+          <!-- מיון תוצאות לפי -->
+          <div class="col border border-dark form-check form-check-reverse px-1">
+
+            <h6 class="border-bottom border-dark text-center">מיון תוצאות לפי</h6>
+
+              {%for choice in form.filter%}
+
+                <div class="form-check miun pe-4">
+                  {{choice.label(class_="form-check-label")}}{{choice(class_="form-check-input myvalidate")}}
+                </div>
+              {%endfor%}
+
+          </div>
+
+          <!-- מילת חיפוש -->
+          <div class="col border border-dark form-check px-1">
+            <h6 class="border-bottom border-dark">מילת חיפוש</h6>
+            <form class="d-flex" role="search"></form>
+            {{form.search(class_="form-control me-2 myvalidate",placeholder_="חיפוש",id_="Polytop_MilatChipus",type_="search")}}
+
+            <h6>{{form.stock_lim.label}}</h6>
+            {{form.stock_lim(id_="migbelet_menayot",type_="range",class_="js-range-slider", for_max="hidden_menayot_max", for_min="hidden_menayot_min")}}
+            {{form.hidden_menayot_max}}
+            {{form.hidden_menayot_min}}
+
+            <h6>{{form.forex_lim.label}}</h6>
+            {{form.forex_lim(id_="migbelet_matach", type_="range", class_="js-range-slider", for_max="hidden_forex_max", for_min="hidden_forex_min")}}
+            {{form.hidden_forex_max}}
+            {{form.hidden_forex_min}}
+
+            <!-- <h6>דרגות סיכון</h6>
+            {{form.risk_level_lim(id_="migbelet_dargot_sicun", type_="range" ,class_="myRangeSlider", for_min="hidden_risk_level_min")}}
+            {{form.hidden_risk_level_min}} -->
+          </div>
+          <!-- התמחויות -->
+          <div class="col border border-dark form-check form-check-reverse px-1" style="max-width: 200px;">
+            <h6 class="border-bottom border-dark text-center">התמחות</h6>
+            <div id="Polytop_HITMAHUT">
+              {%for choice in form.expr_sel%}
+                <div class="form-check miun pe-4 myvalidate">
+                  {{choice.label(class_="form-check-label myvalidate")}}{{choice(class_="form-check-input")}}
+                </div>
+              {%endfor%}
+            </div>
+          </div>
+
+
+
+
+
+            <!-- מנהלים -->
+      <div class="col border border-dark form-check form-check-reverse px-1">
+          <h6 class="border-bottom border-dark text-center">חברה מנהלת</h6>
+
+        <div class="form-check pe-2 pe-4" id="all_menahalim">
+          {{form.all_manufacturers.label(class_="form-check-label")}}
+          {{form.all_manufacturers(class_="form-check-input myvalidate", type_="checkbox")}}
+        </div><br>
+
+        <div>
+            <select class="form-select type_fillterim mb-3 ms-4 text-truncate menahalim text-end myvalidate" name="Yatzran1" style="width:220px;" >
+              {% for option in form.Yatzran1%}
+                {{option(class_="myvalidate")}}
+              {%endfor%}
+          </select>
+        </div>
+
+        <div>
+            <select class="form-select type_fillterim mb-3 ms-4 text-truncate menahalim text-end myvalidate" name="Yatzran2" style="width:220px;">
+              {% for option in form.Yatzran2%}
+                {{option(class_="myvalidate")}}
+              {%endfor%}
+          </select>
+        </div>
+
+        <div>
+            <select class="form-select type_fillterim mb-3 ms-4 text-truncate menahalim text-end myvalidate" name="Yatzran3" style="width:220px;">
+              {% for option in form.Yatzran3%}
+                {{option(class_="myvalidate")}}
+              {%endfor%}
+          </select>
+        </div>
+
+        <div>
+            <select class="form-select type_fillterim mb-3 ms-4 text-truncate menahalim text-end myvalidate" name="Yatzran4" style="width:220px;">
+              {% for option in form.Yatzran4%}
+                {{option(class_="myvalidate")}}
+              {%endfor%}
+          </select>
+        </div>
+
+      </div>
+    <!-- תת-קופה -->
+      <div class="col border border-dark form-check form-check-reverse px-1">
+        <h6 class="border-bottom border-dark text-center">תת-קופה</h6>
+
+        <div class="input-group pe-2">
+          {% for option in form.kupot_gemel%}
+            <div class="form-check myvalidate pe-3" >
+              {{option.label(class_="form-check-label")}}{{option(class_="form-check-input")}}
+            </div>
+          {%endfor%}
+        </div>
+
+        <div class="input-group pe-2">
+          {% for option in form.saving_policies%}
+            <div class="form-check myvalidate pe-3">
+                   {{option.label(class_="form-check-label")}}{{option(class_="form-check-input")}}
+           </div>
+         {%endfor%}
+       </div>
+
+       <div class="input-group pe-2">
+         {% for option in form.pension_funds%}
+           <div class="form-check myvalidate pe-3">
+                  {{option.label(class_="form-check-label")}}{{option(class_="form-check-input")}}
+          </div>
+        {%endfor%}
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<div class="CONTAINER " style="width:100%;">
+
+<div class="text-center" style="max-width:99.3%;"dir="rtl">
+  <div class="row fw-bold border-bottom border-dark border-3">
+  <div class="col p-0 border-start"style="max-width:7%;"></div>
+    <div class="col p-0 border-start"style="max-width:5.5%;">מס' קופה</div>
+    <div class="col p-0 border-start"style="max-width:16%;">שם מנהל הקופה</div>
+    <div class="col p-0 border-start"style="max-width:28%;">שם הקופה</div>
+    <div class="col p-0 border-start"style="max-width:5.5%;">התמחות</div>
+    <div class="col p-0 border-start"style="max-width:6%;">תשואה מתחילת השנה</div>
+    <div class="col p-0 border-start"style="max-width:6.2%;">תשואה שנה אחורה</div>
+    <div class="col p-0 border-start"style="max-width:6%;">תשואה 3 שנים אחורה</div>    
+    <div class="col p-0 border-start"style="max-width:6.2%;">שארפ</div>
+    <div class="col p-0 border-start"style="max-width:5%;">חשיפה למניות</div>
+    <div class="col p-0 "style="max-width:5%;">חשיפה למט"ח</div>
+  </div>
+</div>
+
+
+<table id="kupotTable" class="table table-hover table-responsive" dir="rtl" style="flex:1; display:block; overflow-y:scroll; overflow-x:hidden; height:410px; ">
+  <thead>
+    <tr>
+      <th style="display:none;"></th>
+      <th style="width:4%;"></th>
+      <th scope="col" style="width:3%;"></th>
+      <th scope="col" style="width:10%;"></th>
+      <th scope="col" style="width:18%;"></th>
+      <th scope="col" style="width:3%;"></th>
+      <th scope="col" style="width:3%;"></th>
+      <th scope="col" style="width:3%;"></th>
+      <th scope="col" style="width:3%;"></th>
+      <th scope="col" style="width:3%;"></th>
+      <th scope="col" style="width:3%;"></th>
+      <th scope="col" style="width:3%;"></th>
+    </tr>
+  </thead>
+  <tbody class="overflow-auto" id="mainTable">
+    {%for i in kupotData%}
+    <tr class="kupaSelectedRow">
+      <td style="display:none;">{{i.IdKupaYachid|int}}</td>
+      <td class="border rounded table-danger p-2 my-1" style="--bs-bg-opacity: .5;">לחצו להורדה</td>
+      <td>{{i.IdKupa|int}}</td>
+      <td>{{i.ShemMenahel|truncate(23)}}</td>
+      <td>{{i.shemKupa}}</td>
+      <td>{{i.HITMAHUT_RASHIT}}</td>
+      <td>{{"{}".format(i.TSUA_MITZT_MI_THILAT_SHANA*100)|float|round(2)|string+"%"}}</td>
+      <td>{{"{}".format(i.TSUA_MITZTABERET_LETKUFA*100)|float|round(2)|string+"%"}}</td>
+      <td>{{"{}".format(i.TSUA_MITZTABERET_36_HODASHIM*100)|float|round(2)|string+"%"}}</td>
+      <td>{{i.Sharp|round(2)}}</td>
+      <td>{{"{}".format(i.ChassifaLeMenayot*100)|float|round(2)|string+"%"}}</td>
+      <td>{{"{}".format(i.ChassifaLeMatach*100)|float|round(2)|string+"%"}}</td>
+    </tr>
+    {%endfor%}
+
+    {%for i in results%}
+    <tr id="kupaSel" class="kupaSel">
+      <td class="IdKupa " style="display:none;">{{i.IdKupaYachid|int}}</td>
+      <td class="border rounded table-success p-2" style="--bs-bg-opacity: .5;">לחצו להוספה</td>
+      <td>{{i.IdKupa|int}}</td>
+      <td>{{i.ShemMenahel|truncate(23)}}</td>
+      <td>{{i.shemKupa}}</td>
+      <td>{{i.HITMAHUT_RASHIT}}</td>
+      <td>{{"{}".format(i.TSUA_MITZT_MI_THILAT_SHANA*100)|float|round(2)|string+"%"}}</td>
+      <td>{{"{}".format(i.TSUA_MITZTABERET_LETKUFA*100)|float|round(2)|string+"%"}}</td>
+      <td>{{"{}".format(i.TSUA_MITZTABERET_36_HODASHIM*100)|float|round(2)|string+"%"}}</td>
+      <td>{{i.Sharp|round(2)}}</td>
+      <td>{{"{}".format(i.ChassifaLeMenayot*100)|float|round(2)|string+"%"}}</td>
+      <td>{{"{}".format(i.ChassifaLeMatach*100)|float|round(2)|string+"%"}}</td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</form>
+
+  <!-- Modal -->
+  <div class="modal fade" id="changeWarningModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="changeWarningModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">התראה לפני מחיקה</h1>
+        </div>
+        <div class="modal-body">
+        החלפת סוג הקופה ימחק את רשימת הקופות שנבחרו
+        </div>
+        <div class="modal-footer">
+          <button id="myCloseModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">בטל</button>
+          <button id="kupaChanger" type="button" class="btn btn-primary">החלף סוג קופה</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div id="myAlertLim" class="position-absolute top-0 end-0" style="z-index:1;"></div>
+</body>
+<footer class="text-center bg-dark text-white fixed-bottom">
+<div class="row">
+  <div class="col-3"><p>**tom@predict.co.il**-ניתן ליצור איתנו קשר ב</p>
+  </div>
+  <div class="col">
+    <p class="my-0 p-1">תוכן דף זה אינו מהווה המלצה, יעוץ או שיווק השקעות ואינו מהווה תחליף לשיקול דעת המשתמש או דעת מומחים</p>
+  </div>
+</div>
+</footer>
+
+</html>
+
+<script type="text/javascript">
+    // page variables
+    var variables = {
+     "Polytop_What": {{Polytop_What}},
+     "min_menayot": {{min_menayot|round(2)}},
+     "max_menayot": {{max_menayot|round(2)}},
+     "min_matach": {{min_matach|round(2)}},
+     "max_matach": {{max_matach|round(2)}},
+     "excelLimitor":{{excelLimitor}},
+     "reloder":{{reloder}}
+   };
+  const myAlerts = [];
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+          myAlerts.push("{{message}}");
+        {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {%if User != None%}
+    var conected = true;
+  {%else%}
+    var conected = false;
+  {%endif%}
+</script>
+<script src="http://127.0.0.1:80//static/js/gemelTeck.js"></script>
