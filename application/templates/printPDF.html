@@ -58,7 +58,7 @@
   <div class="col-2 form-check border rounded px-0">
     <div class="d-grid gap-2 mt-2">
       <a class="btn btn-dark bg-gradient" type="button" onclick="exportData()">יצוא לאקסל</a>
-      <a class="btn btn-dark" type="button" href="{{url_for('printPDF')}}?idList={{myData['myList']}}&kupaType={{myData['type']}}&maxMenayot={{myData['menayot']}}&maxMatach={{myData['matach']}}&searchWord={{myData['search']}}">pdf</a>
+      <a class="btn btn-dark" type="button" href="{{url_for('printPDF')}}?idList={{myData['myList']}}&kupaType={{myData['type']}}&maxMenayot={{myData['menayot']}}&maxMatach={{myData['matach']}}&searchWord={{myData['search']}}" onclick="{{myPdfs(kupotData,myData,kupaType)}}">pdf</a>
       <a class="btn btn-dark bg-gradient myvalidate UserPrivilege" type="button" href="{{url_for('Backtest')}}" >backtesting</a>
       <a class="btn btn-dark" role="button" href="{{url_for('index')}}">לסנן הקופות</a>
     {%if User != None%}

@@ -90,6 +90,47 @@ def comparison():
 
     return render_template('kupotComp.html', trimdList=trimdList, kupotData=kupotData, myData=myData,
      kupaType=kupaType,kupotNameList=kupotNameList,myDates=myDates,selectedkupot=selectedkupot,
+     kupotHeaderIndex=kupotHeaderIndex,User=User)
+
+@appy.route('/printPDF', methods=["GET"])
+def printPDF():
+    User=None
+    try:
+        if session["User"] is not None:
+            User = user.query.filter_by(email=session["User"]).first()
+            excelLimitor=1000000
+    except:
+        session["User"]=None
+    myData={}
+    myData["myList"] = request.args.get("idList")
+    myData["type"] = request.args.get("kupaType")
+    myData["date"] = datetime.datetime.now().strftime("%d/%m/%Y")
+    myData["menayot"] = request.args.get("maxMenayot")
+    myData["matach"] = request.args.get("maxMatach")
+    myData["search"] = request.args.get("searchWord")
+
+    trimdList=[x for x in myData["myList"].split(",") if x != ""]
+
+    kupotData = FinancialAssetscomparison(trimdList)
+    dictOfSugim = {"1":"ביטוח","2":"קופות גמל","3":"קרנות פנסיה","8":"קרנות השתלמות"}
+    kupaType = dictOfSugim[str(myData['type'])]
+
+    kupotNameList = []
+    for i in kupotData:
+        kupotNameList.append(i.shemKupa)
+
+    myDates = MYMONTHTRACKER(kupotData[0].AD_TKUFAT_DIVUACH)
+
+    selectedkupot = kupotData
+
+    kupotHeaderIndex = []
+    myIndex = 0
+    for index in kupotData:
+        myIndex+=1
+        kupotHeaderIndex.append(myIndex)
+
+    return render_template('printPDF.html', trimdList=trimdList, kupotData=kupotData, myData=myData,
+     kupaType=kupaType,kupotNameList=kupotNameList,myDates=myDates,selectedkupot=selectedkupot,
      kupotHeaderIndex=kupotHeaderIndex,User=User,myPdfs=myPdfs)
 
 @appy.route('/logout')
@@ -238,9 +279,8 @@ def dictionary():
 
 @appy.route("/agentRedirect",methods=['GET',"POST"])
 def agentRedirect():
-    form =agentInfo()
-
-    return render_template('agentRedirect.html',form=form)
+   form =agentInfo()
+   return render_template('agentRedirect.html',form=form)
 
 if __name__ == '__main__':
     appy.run(debug=True, host='0.0.0.0', port=80)
